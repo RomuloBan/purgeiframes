@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>iframes always leak in IE?!</title>
+@h@</head>
+<body>
+
+<p><button id="create">Create iframe</button></p>
+
+<p><button id="remove">Remove iframe</button></p>
+
+<p><button id="garbage">CollectGarbage()</button></p>
+
+<script>
+
+function addEvent(element, evt, callback) {
+	if (element.attachEvent) {
+		element.attachEvent('on' + evt, callback);
+	} else {
+		element.addEventListener(evt, callback, false);
+	}
+}
+
+addEvent(document.getElementById('create'), 'click', function(){
+	var iframe = document.createElement('iframe');
+	iframe.src = 'http://en.wikipedia.org/wiki/Memory_leak';
+	document.body.appendChild(iframe);
+	iframe = null;
+});
+
+addEvent(document.getElementById('remove'), 'click', function(){
+	var iframes = document.getElementsByTagName('iframe');
+  for(var i = iframes.length - 1, min = 0; i >= min;i--){
+    iframes[i].src = 'about:blank';
+    document.body.removeChild(iframes[i]);
+    iframes[i] = null;
+  };
+
+	iframes = null;
+});
+
+addEvent(document.getElementById('garbage'), 'click', function(){
+	if (window.CollectGarbage) { window.CollectGarbage(); }
+});
+
+</script>
+
+</body>
+</html>
