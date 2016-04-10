@@ -29,26 +29,64 @@
       }
     }
 
+    function showFrame(num) {
+      console.log("Destruido iframe" + num);
+    }
+
     addEvent(document.getElementById('create'), 'click', function() {
+      var num = 1;
       var iframe = document.createElement('iframe');
       iframe.src = 'http://en.wikipedia.org/wiki/Memory_leak';
+      iframe.onunload = showFrame(num);
       document.body.appendChild(iframe);
-      iframe = null;
+      //iframe = null;
     });
+
+
+    function getFrames(input) {
+      var bodyFrame = 'documentWindow.childNodes[0].childNodes[1]';
+      if(input.childNodes.length) {
+        input['childNodes'].forEach(node => {
+          if(node.nodeName === 'IFRAME') getFrames(node);
+          else iframes.push(input);
+        });
+
+      } else {
+        removeFrame(input);
+      }
+
+    }
+
+    function removeFrame(iframe) {
+      iframe.src = 'about:blank';
+      if(iframe.documentWindow) {
+        iframe.documentWindow.document = null;
+        iframe.documentWindow = null;
+      }
+      document.body.removeChild(iframe);
+      iframe = null;
+    }
+
+
 
     addEvent(document.getElementById('remove'), 'click', function() {
       var iframes = document.getElementsByTagName('iframe');
-      for (var i = iframes.length - 1, min = 0; i >= min; i--) {
-        iframes[i].src = 'about:blank';
-        if(iframes[i].documentWindow) {
-          iframes[i].documentWindow.document = null;
-          iframes[i].documentWindow = null;
-        }
-        document.body.removeChild(iframes[i]);
-        iframes[i] = null;
-      };
+      for(var i = iframes.length - 1, max = 0; i >= max;i--) {
+          getFrames(iframes[i]);
 
-      iframes = null;
+      }
+
+      // for (var i = iframes.length - 1, min = 0; i >= min; i--) {
+      //   iframes[i].src = 'about:blank';
+      //   if(iframes[i].documentWindow) {
+      //     iframes[i].documentWindow.document = null;
+      //     iframes[i].documentWindow = null;
+      //   }
+      //   document.body.removeChild(iframes[i]);
+      //   iframes[i] = null;
+      // };
+      //
+      // iframes = null;
     });
 
     addEvent(document.getElementById('garbage'), 'click', function() {
