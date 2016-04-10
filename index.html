@@ -40,6 +40,10 @@
       var iframes = document.getElementsByTagName('iframe');
       for (var i = iframes.length - 1, min = 0; i >= min; i--) {
         iframes[i].src = 'about:blank';
+        if(iframes[i].documentWindow) {
+          iframes[i].documentWindow.document = null;
+          iframes[i].documentWindow = null;
+        }
         document.body.removeChild(iframes[i]);
         iframes[i] = null;
       };
